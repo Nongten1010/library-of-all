@@ -3,5 +3,6 @@ export const environment = {
     apiEndpoints: {
       addIllRequest: 'https://api.myproductionserver.com/Add_data_ill.php'
     },
+     apiUrl: 'https://yourdomain.com/library-api'
   };
   

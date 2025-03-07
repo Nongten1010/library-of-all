@@ -6,4 +6,5 @@ export const environment = {
     addBuybookRequest: '/api/ill/Add_data_buybook.php'
     
   },
+   apiUrl: 'http://localhost:8888/library-api'
 };

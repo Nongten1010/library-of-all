@@ -175,53 +175,43 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let item of getFilteredBorrowers()">
-              <td>{{ item.equipment.id }}</td>
+            <tr *ngFor="let item of borrowers">
+              <td>{{ item.equipment_id }}</td>
               <td>
                 <div class="d-flex align-items-center">
                   <div>
-                    <div class="fw-bold">{{ item.equipment.name }}</div>
-                    <small class="text-muted">S/N:
-                      {{ getEquipmentSerialNumber(item.equipment.id) }}</small>
+                    <div class="fw-bold">{{ item.equipment_name }}</div>
+                    <small class="text-muted">S/N: {{ getEquipmentSerialNumber(item.equipment_id) }}</small>
                   </div>
                 </div>
               </td>
-              <td>{{ getCategoryName(item.equipment.category) }}</td>
-              <td>{{ item.name }}</td>
-              <td>{{ item.contact }}</td>
-              <td>{{ item.borrowDate }}</td>
-              <td>{{ item.dueDate }}</td>
+              <td>{{ getCategoryName(item.equipment_category_id || '') }}</td>
+              <td>{{ item.user_name }}</td>
+              <td>{{ item.user_contact || '' }}</td>
+              <td>{{ item.borrow_date }}</td>
+              <td>{{ item.due_date }}</td>
               <td>
-                <span class="badge" [class]="getBadgeClass(item.status)">
-                  {{ getStatusText(item.status) }}
+                <span class="badge" [class]="getBadgeClass(item.status_name || '')">
+                  {{ getStatusText(item.status_name || '') }}
                 </span>
               </td>
               <td>
                 <button class="btn btn-sm btn-success me-1" (click)="openApproveModal(item.id)"
-                  *ngIf="item.status === 'pending'">
+                        *ngIf="item.status_name === 'pending'">
                   <i class="bi bi-check-circle"></i> อนุมัติ
                 </button>
                 <button class="btn btn-sm btn-danger me-1" (click)="openCancelModal(item.id)"
-                  *ngIf="item.status === 'pending'">
+                        *ngIf="item.status_name === 'pending'">
                   <i class="bi bi-x-circle"></i> ปฏิเสธ
                 </button>
-                <button class="btn btn-sm btn-success me-1" (click)="openReturnModal(item.id)" *ngIf="
-                    item.status !== 'not-returned' &&
-                    item.status !== 'maintenance' &&
-                    item.status !== 'pending'
-                  ">
+                <button class="btn btn-sm btn-success me-1" (click)="openReturnModal(item.id)" 
+                        *ngIf="item.status_name === 'borrowing' || item.status_name === 'overdue'">
                   <i class="bi bi-arrow-return-left"></i> คืน
                 </button>
-                <button class="btn btn-sm btn-success me-1" (click)="openMaintenanceModal(item.id)" *ngIf="
-                item.status !== 'returned' &&
-         
-                item.status !== 'pending' &&
-                item.status !== 'overdue' &&
-                item.status !== 'borrowing'
-              ">
+                <button class="btn btn-sm btn-success me-1" (click)="openMaintenanceModal(item.id)" 
+                        *ngIf="item.status_name === 'borrowing' || item.status_name === 'overdue'">
                   <i class="bi bi-wrench"></i> ส่งซ่อม
                 </button>
-
                 <button class="btn btn-sm btn-info" (click)="viewDetails(item.id)">
                   <i class="bi bi-info-circle"></i>
                 </button>
