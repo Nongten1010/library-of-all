@@ -1,0 +1,48 @@
+.card {
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+  }
+  
+  .card:hover {
+    transform: translateY(-10px); /* ยกการ์ดขึ้นเมื่อ hover */
+  }
+  
+  .card-title {
+    font-size: 18px;
+  }
+  
+  .card-text {
+    color: #6c757d;
+  }
+  
+  /* เพิ่มระยะห่างปกติ */
+.card {
+    margin-bottom: 15px; /* ระยะห่างปกติ */
+  }
+  
+  /* เพิ่มระยะห่างมากขึ้นสำหรับหน้าจอขนาดเล็ก */
+  @media (max-width: 768px) {
+    .card {
+      margin-bottom: 16px; /* เพิ่มระยะห่างเมื่อหน้าจอเล็ก */
+    }
+  }
+  label {
+    font-size: 1.1rem; /* เพิ่มขนาดตัวหนังสือ */
+
+  }
+  .btn {
+    background-color: #4c9493;
+    color: white;
+    border: 2px solid #3a7a72; /* เพิ่มเส้นขอบ */
+    border-radius: 5px; /* ปรับมุมให้โค้ง */
+  }
+  
+  .btn:hover {
+    background-color: #3a7a72;
+  }
+  /* styles.scss */
+input::placeholder,
+textarea::placeholder {
+  color: rgba(0, 0, 0, 0.4);
+}

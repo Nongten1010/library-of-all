@@ -1,0 +1,18 @@
+.navbar-toggler {
+  color: rgba(8, 93, 73, 0.65);
+  }
+/* เปลี่ยนสีของ dropdown-item เมื่อคลิกหรือ focus */
+.dropdown-item:active, 
+.dropdown-item:focus {
+  background-color: #147967; /* สีเขียว (จาก Bootstrap สี success) */
+  color: white; /* เปลี่ยนสีตัวอักษรเป็นสีขาว */
+}
+
+.navbar-brand i {
+  font-size: 1.5rem; /* ปรับขนาดของไอคอน */
+  margin-right: 8px; /* เพิ่มช่องว่างระหว่างไอคอนและข้อความ */
+}
+
+.nav-link {
+  font-size: 1.0rem; /* ปรับขนาดของข้อความในเมนู */
+}

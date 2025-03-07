@@ -1,0 +1,13 @@
+# เปิดใช้งาน RewriteEngine
+RewriteEngine On
+
+# ถ้าเป็นไฟล์หรือไดเรกทอรีที่มีอยู่จริง ให้เรียกไฟล์นั้นโดยตรง
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# สำหรับ API เรียกไปยัง api/index.php
+RewriteRule ^api/(.*)$ api/index.php [QSA,L]
+
+# สำหรับการเรียกอื่นๆ ให้เรียกไป index.php (สำหรับกรณีที่มี frontend อยู่ในโฟลเดอร์เดียวกับ backend)
+RewriteRule ^(.*)$ index.php [QSA,L]

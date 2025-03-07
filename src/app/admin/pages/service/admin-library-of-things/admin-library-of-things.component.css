@@ -1,0 +1,34 @@
+
+.bg-library {
+  background-color: #052c65;
+}
+.table-hover tbody tr:hover {
+  background-color: rgba(13, 110, 253, 0.1);
+}
+.item-image {
+  max-width: 80px;
+  height: auto;
+  object-fit: cover;
+  border-radius: 4px;
+}
+.status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
+  }
+  .status-available {
+    background-color: #198754;
+  }
+  .status-borrowed {
+    background-color: #ffc107;
+  }
+  .status-overdue {
+    background-color: #dc3545;
+  }
+  .status-maintenance {
+    background-color: #6c757d;
+  }
+
+  

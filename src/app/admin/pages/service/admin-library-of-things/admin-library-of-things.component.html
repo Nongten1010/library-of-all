@@ -1,0 +1,456 @@
+<h3 class="text-center">Admin Library of Things</h3>
+<p class="text-center">
+  จัดการรายการยืม-คืนอุปกรณ์อิเล็กทรอนิกส์และอุปกรณ์ต่างๆ
+</p>
+<!-- Search & Category Select -->
+
+<div class="container-fluid py-4">
+  <!-- Stats Cards -->
+  <div class="row mb-4">
+    <!-- รายการที่ขอยืม -->
+    <div class="col-xl-3 col-md-6 mb-4" (click)="changeTab('pending')" style="cursor: pointer">
+      <div class="card border-left-primary h-100 py-2" [class.bg-light]="activeTab === 'pending'">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col-auto pe-3">
+              <i class="bi bi-laptop text-primary" style="font-size: 2rem"></i>
+            </div>
+            <div class="col">
+              <div class="text-xs font-weight-bold text-muted mb-1">
+                รายที่รออนุมัติ
+              </div>
+              <div class="h4 mb-0 font-weight-bold">
+                {{ summary.pendingRequests }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- รายการที่ยังไม่คืน -->
+    <div class="col-xl-3 col-md-6 mb-4" (click)="changeTab('not-returned')" style="cursor: pointer">
+      <div class="card border-left-success h-100 py-2" [class.bg-light]="activeTab === 'not-returned'">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col-auto pe-3">
+              <i class="bi bi-box-arrow-right text-success" style="font-size: 2rem"></i>
+            </div>
+            <div class="col">
+              <div class="text-xs font-weight-bold text-muted mb-1">
+                รายการที่ยังไม่คืน
+              </div>
+              <div class="h4 mb-0 font-weight-bold">
+                {{ summary.activeBorrows }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- รายการที่เกินกำหนด -->
+    <div class="col-xl-3 col-md-6 mb-4" (click)="changeTab('overdue')" style="cursor: pointer">
+      <div class="card border-left-danger h-100 py-2" [class.bg-light]="activeTab === 'overdue'">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col-auto pe-3">
+              <i class="bi bi-exclamation-triangle text-danger" style="font-size: 2rem"></i>
+            </div>
+            <div class="col">
+              <div class="text-xs font-weight-bold text-muted mb-1">
+                รายการที่เกินกำหนดคืน
+              </div>
+              <div class="h4 mb-0 font-weight-bold">{{ summary.overdue }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- อุปกรณ์ที่อยู่ระหว่างซ่อม -->
+    <div class="col-xl-3 col-md-6 mb-4" (click)="changeTab('maintenance')" style="cursor: pointer">
+      <div class="card border-left-warning h-100 py-2" [class.bg-light]="activeTab === 'maintenance'">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col-auto pe-3">
+              <i class="bi bi-wrench text-warning" style="font-size: 2rem"></i>
+            </div>
+            <div class="col">
+              <div class="text-xs font-weight-bold text-muted mb-1">
+                อุปกรณ์ที่อยู่ระหว่างซ่อม
+              </div>
+              <div class="h4 mb-0 font-weight-bold">
+                {{ summary.underMaintenance }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters and Search -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-4 mb-3 mb-md-0">
+          <div class="input-group">
+            <span class="input-group-text bg-white">
+              <i class="bi bi-search"></i>
+            </span>
+            <input type="text" class="form-control" placeholder="ค้นหาตามชื่อผู้ยืม, รหัสอุปกรณ์..."
+              [(ngModel)]="searchText" />
+          </div>
+        </div>
+        <div class="col-md-3 mb-3 mb-md-0">
+          <select class="form-select" [(ngModel)]="selectedCategory">
+            <option value="all">-- หมวดหมู่อุปกรณ์ทั้งหมด --</option>
+            <option *ngFor="let cat of categories" [value]="cat.id">
+              {{ cat.name }}
+            </option>
+          </select>
+        </div>
+        <div class="col-md-3 mb-3 mb-md-0">
+          <select class="form-select" [(ngModel)]="selectedStatus">
+            <option value="all">-- สถานะทั้งหมด --</option>
+            <option *ngFor="let status of borrowStatusOptions" [value]="status.id">
+              {{ status.name }}
+            </option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <button class="btn btn-primary w-100" (click)="onSearch()">
+            <i class="bi bi-search"></i> ค้นหา
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <ul class="nav nav-tabs mb-4">
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="activeTab === 'pending'" (click)="changeTab('pending')"
+        href="javascript:void(0)">รายการรออนุมัติ</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="activeTab === 'not-returned'" (click)="changeTab('not-returned')"
+        href="javascript:void(0)">รายการที่ยังไม่คืน</a>
+    </li>
+    <!-- <li class="nav-item">
+            <a class="nav-link" [class.active]="activeTab === 'returned'"
+               (click)="changeTab('returned')" href="javascript:void(0)">รายการที่คืนแล้ว</a>
+        </li> -->
+    <li class="nav-item">
+      <a class="nav-link text-danger" [class.active]="activeTab === 'overdue'" (click)="changeTab('overdue')"
+        href="javascript:void(0)">เกินกำหนดคืน</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link text-warning" [class.active]="activeTab === 'maintenance'" (click)="changeTab('maintenance')"
+        href="javascript:void(0)">ซ่อมบำรุง</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="activeTab === 'all'" (click)="changeTab('all')"
+        href="javascript:void(0)">ทั้งหมด</a>
+    </li>
+  </ul>
+
+  <!-- Data Table -->
+  <div class="card shadow mb-4">
+    <div class="card-header py-3">
+      <h6 class="m-0 font-weight-bold">รายการยืม-คืนอุปกรณ์</h6>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-dark">
+            <tr>
+              <th>รหัสอุปกรณ์</th>
+              <th>ชื่ออุปกรณ์</th>
+              <th>หมวดหมู่</th>
+              <th>ผู้ยืม</th>
+              <th>เบอร์ติดต่อ</th>
+              <th>วันที่ยืม</th>
+              <th>กำหนดคืน</th>
+              <th>สถานะ</th>
+              <th>การจัดการ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of getFilteredBorrowers()">
+              <td>{{ item.equipment.id }}</td>
+              <td>
+                <div class="d-flex align-items-center">
+                  <div>
+                    <div class="fw-bold">{{ item.equipment.name }}</div>
+                    <small class="text-muted">S/N:
+                      {{ getEquipmentSerialNumber(item.equipment.id) }}</small>
+                  </div>
+                </div>
+              </td>
+              <td>{{ getCategoryName(item.equipment.category) }}</td>
+              <td>{{ item.name }}</td>
+              <td>{{ item.contact }}</td>
+              <td>{{ item.borrowDate }}</td>
+              <td>{{ item.dueDate }}</td>
+              <td>
+                <span class="badge" [class]="getBadgeClass(item.status)">
+                  {{ getStatusText(item.status) }}
+                </span>
+              </td>
+              <td>
+                <button class="btn btn-sm btn-success me-1" (click)="openApproveModal(item.id)"
+                  *ngIf="item.status === 'pending'">
+                  <i class="bi bi-check-circle"></i> อนุมัติ
+                </button>
+                <button class="btn btn-sm btn-danger me-1" (click)="openCancelModal(item.id)"
+                  *ngIf="item.status === 'pending'">
+                  <i class="bi bi-x-circle"></i> ปฏิเสธ
+                </button>
+                <button class="btn btn-sm btn-success me-1" (click)="openReturnModal(item.id)" *ngIf="
+                    item.status !== 'not-returned' &&
+                    item.status !== 'maintenance' &&
+                    item.status !== 'pending'
+                  ">
+                  <i class="bi bi-arrow-return-left"></i> คืน
+                </button>
+                <button class="btn btn-sm btn-success me-1" (click)="openMaintenanceModal(item.id)" *ngIf="
+                item.status !== 'returned' &&
+         
+                item.status !== 'pending' &&
+                item.status !== 'overdue' &&
+                item.status !== 'borrowing'
+              ">
+                  <i class="bi bi-wrench"></i> ส่งซ่อม
+                </button>
+
+                <button class="btn btn-sm btn-info" (click)="viewDetails(item.id)">
+                  <i class="bi bi-info-circle"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card-footer bg-white">
+      <div class="row">
+        <div class="col-md-6 small">
+          แสดง 1 ถึง {{ getFilteredBorrowers().length }} จากทั้งหมด
+          {{ borrowers.length }} รายการ
+        </div>
+        <div class="col-md-6">
+          <nav>
+            <ul class="pagination justify-content-end mb-0">
+              <li class="page-item disabled">
+                <a class="page-link" href="javascript:void(0)"><i class="bi bi-chevron-left"></i></a>
+              </li>
+              <li class="page-item active">
+                <a class="page-link" href="javascript:void(0)">1</a>
+              </li>
+              <li class="page-item disabled">
+                <a class="page-link" href="javascript:void(0)"><i class="bi bi-chevron-right"></i></a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- ปุ่มอนุมัติในตาราง ยังคงอยู่เหมือนเดิม -->
+  <!-- <tr *ngFor="let item of borrowers">
+        <td>
+          <button (click)="openApproveModal(item.id)" *ngIf="item.status === 'pending'">
+            อนุมัติ
+          </button>
+        </td>
+      </tr> -->
+
+  <!-- เพิ่ม ApproveModal Component -->
+  <app-approve-modal [borrowRequest]="selectedBorrowRequest" [equipments]="equipments" [categories]="categories"
+    (approved)="handleApproved($event)" (closed)="handleModalClosed()">
+  </app-approve-modal>
+
+  <app-returned-modal [borrowRequest]="selectedReturnBorrow" [equipments]="equipments" [categories]="categories"
+    (returned)="handleReturned($event)" (closed)="handleModalClosed()">
+  </app-returned-modal>
+
+  <app-cancel-modal [borrowRequest]="selectedCancelBorrow" (cancelled)="handleCancelled($event)"
+    (closed)="handleModalClosed()">
+  </app-cancel-modal>
+
+  <app-maintenance-modal [borrowRequest]="selectedMaintenanceBorrow" [equipments]="equipments" [categories]="categories"
+    (maintenanceStart)="handleMaintenanceStart($event)" (closed)="handleModalClosed()">
+  </app-maintenance-modal>
+
+  <app-info-modal [borrowRequest]="selectedInfoBorrow" [equipments]="equipments" [categories]="categories"
+  (statusChanged)="handleStatusChanged($event)"
+  (printRequested)="handlePrintRequested($event)"
+  (approveRequested)="handleApproveRequested($event)"
+  (returnRequested)="handleReturnRequested($event)"
+  (maintenanceRequested)="handleMaintenanceRequested($event)"
+  (cancelRequested)="handleCancelRequested($event)"
+  (closed)="handleModalClosed()">
+</app-info-modal>
+
+  <div class="modal fade" id="returnModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header bg-light">
+          <h5 class="modal-title">ยืนยันการคืนอุปกรณ์</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-5">
+              <div class="text-center mb-3">
+                <!-- <img src="/api/placeholder/250/200" alt="Equipment" class="img-fluid rounded mb-3" /> -->
+                <h5 class="card-title">โน๊ตบุ๊ค Lenovo xxxxxx</h5>
+                <h6 class="text-muted mb-1">รหัส: EQ023</h6>
+                <span class="badge bg-danger mb-3">เกินกำหนด</span>
+              </div>
+
+              <div class="card border mb-3">
+                <div class="card-body">
+                  <h6 class="mb-3">รายละเอียดการยืม</h6>
+                  <div class="mb-2 row">
+                    <div class="col-6 text-muted">รหัสการยืม:</div>
+                    <div class="col-6">BRW20250128-004</div>
+                  </div>
+                  <div class="mb-2 row">
+                    <div class="col-6 text-muted">วันที่ยืม:</div>
+                    <div class="col-6">28/01/2025</div>
+                  </div>
+                  <div class="mb-2 row">
+                    <div class="col-6 text-muted">กำหนดคืน:</div>
+                    <div class="col-6 text-danger fw-bold">11/02/2025</div>
+                  </div>
+                  <div class="mb-2 row">
+                    <div class="col-6 text-muted">วันที่คืน:</div>
+                    <div class="col-6 text-primary fw-bold">20/02/2025</div>
+                  </div>
+                  <div class="mb-2 row">
+                    <div class="col-6 text-muted">เกินกำหนด:</div>
+                    <div class="col-6 text-danger fw-bold">9 วัน</div>
+                  </div>
+                  <div class="mb-2 row">
+                    <div class="col-6 text-muted">ค่าปรับ:</div>
+                    <div class="col-6 text-danger fw-bold">450 บาท</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-7">
+              <div class="card border mb-3">
+                <div class="card-body">
+                  <h6 class="mb-3">ข้อมูลผู้ยืม</h6>
+                  <div class="d-flex align-items-center mb-3">
+                    <div class="me-3">
+                      <!-- <img src="/api/placeholder/70/70" alt="Borrower" class="rounded-circle" /> -->
+                    </div>
+                    <div>
+                      <h6 class="mb-0">วิมล รักเรียน</h6>
+                      <div class="text-muted small">รหัสสมาชิก: MEM5478</div>
+                      <div class="text-muted small">ประเภท: นักศึกษา</div>
+                    </div>
+                  </div>
+                  <div class="row mb-2">
+                    <div class="col-md-6">
+                      <div class="mb-2 row">
+                        <div class="col-5 text-muted">อีเมล:</div>
+                        <div class="col-7">wimon.rcom</div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="mb-2 row">
+                        <div class="col-5 text-muted">เบอร์โทร:</div>
+                        <div class="col-7">092-987-6543</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card border mb-4">
+                <div class="card-body">
+                  <h6 class="mb-3">บันทึกการตรวจสอบสภาพอุปกรณ์</h6>
+
+                  <div class="mb-3">
+                    <label class="form-label">สภาพอุปกรณ์เมื่อรับคืน</label>
+                    <select class="form-select mb-3">
+                      <option value="perfect">
+                        สมบูรณ์ - ไม่มีความเสียหาย
+                      </option>
+                      <option value="good">
+                        ดี - มีร่องรอยการใช้งานเล็กน้อย
+                      </option>
+                      <option value="fair">
+                        พอใช้ - มีร่องรอยการใช้งานปานกลาง
+                      </option>
+                      <option value="damaged">เสียหาย - ต้องส่งซ่อม</option>
+                      <option value="lost">สูญหาย - อุปกรณ์ไม่ครบ</option>
+                    </select>
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label">รายละเอียดความเสียหาย (ถ้ามี)</label>
+                    <textarea class="form-control" rows="3" placeholder="กรอกรายละเอียดความเสียหายที่พบ..."></textarea>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card bg-light mb-3">
+                <div class="card-body">
+                  <h6 class="mb-3">การชำระค่าปรับ</h6>
+                  <div class="row mb-3">
+                    <div class="col-md-6">
+                      <div class="form-check">
+                        <input class="form-check-input" type="radio" name="paymentMethod" id="payNow" checked />
+                        <label class="form-check-label" for="payNow">
+                          ชำระทันที
+                        </label>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-check">
+                        <input class="form-check-input" type="radio" name="paymentMethod" id="payLater" />
+                        <label class="form-check-label" for="payLater">
+                          ชำระภายหลัง
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div id="paymentOptions">
+                    <div class="row mb-3">
+                      <div class="col-md-6">
+                        <label class="form-label">วิธีการชำระเงิน</label>
+                        <select class="form-select">
+                          <option value="cash">เงินสด</option>
+                          <option value="transfer">โอนเงิน</option>
+                          <option value="credit">บัตรเครดิต/เดบิต</option>
+                        </select>
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label">จำนวนเงิน</label>
+                        <div class="input-group">
+                          <input type="text" class="form-control" value="450" readonly />
+                          <span class="input-group-text">บาท</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+            ยกเลิก
+          </button>
+          <button type="button" class="btn btn-success">ยืนยันการคืน</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,200 @@
+<h3 class="text-center">Library of Things</h3>
+<p class="text-center">ระบบยืมอุปกรณ์เพื่อการเรียนรู้และใช้งาน</p>
+<!-- Search & Category Select -->
+<div class="container my-4">
+  <!-- Filter controls that change based on active tab -->
+  <div class="row mb-4">
+    <!-- Filters for Items tab -->
+    <ng-container *ngIf="activeTab === 'items'">
+      <div class="col-md-6">
+        <select class="form-select" (change)="onCategoryChange($event)">
+          <option *ngFor="let category of categories" [value]="category.id" [selected]="category.id === selectedCategory">
+            {{ category.name }}
+          </option>
+        </select>
+      </div>
+      <div class="col-md-6">
+        <select class="form-select" (change)="onStatusChange($event)">
+          <option *ngFor="let st of status" [value]="st.id" [selected]="st.id === selectedStatus">
+            {{ st.name }}
+          </option>
+        </select>
+      </div>
+    </ng-container>
+    
+    <!-- Filters for History tab -->
+    <ng-container *ngIf="activeTab === 'history'">
+      <div class="col-md-6">
+        <select class="form-select" (change)="onBorrowStatusChange($event)">
+          <option *ngFor="let option of borrowStatusOptions" [value]="option.id" [selected]="option.id === selectedBorrowStatus">
+            {{ option.name }}
+          </option>
+        </select>
+      </div>
+      <div class="col-md-6">
+        <input 
+          type="date" 
+          class="form-control" 
+          [value]="selectedBorrowDate" 
+          (change)="onBorrowDateChange($event)"
+          placeholder="เลือกวันที่ยืม">
+      </div>
+    </ng-container>
+  </div>
+
+  <ul class="nav nav-tabs">
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="activeTab === 'items'" (click)="setActiveTab('items')" data-bs-toggle="tab" href="#items">รายการอุปกรณ์</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="activeTab === 'history'" (click)="setActiveTab('history')" data-bs-toggle="tab" href="#history">ประวัติการยืม</a>
+    </li>
+  </ul>
+
+  <div class="tab-content mt-3">
+    <!-- 📦 Tab รายการอุปกรณ์ -->
+    <div class="tab-pane fade" [class.show]="activeTab === 'items'" [class.active]="activeTab === 'items'" id="items">
+      <div class="list-group">
+        <div *ngIf="items.length === 0" class="alert alert-info">
+          ไม่พบรายการที่ตรงกับเงื่อนไขการค้นหา
+        </div>
+        <div *ngFor="let item of items" class="list-group-item list-group-item-action" 
+             [class.disabled]="item.availableQuantity === 0"
+             (click)="item.availableQuantity > 0 && item.status === 'ว่าง' && openBorrowModal(item)">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h6 class="mb-1">{{ getItemEmoji(item.category) }} {{ item.name }}</h6>
+              <p class="mb-1">{{ item.description }}</p>
+              <small>
+                สภาพ: {{ item.condition }} | 
+                <span [ngClass]="{'text-success': item.availableQuantity > 0, 'text-danger': item.availableQuantity === 0}">
+                  คงเหลือ: {{ item.availableQuantity }}/{{ item.totalQuantity }}
+                </span> | 
+                ยืมได้สูงสุด: {{ item.maxBorrowDays }} วัน
+              </small>
+            </div>
+            <span class="badge" 
+                  [ngClass]="{
+                    'bg-success': item.availableQuantity > 0 && item.status === 'ว่าง',
+                    'bg-warning text-dark': item.status === 'ถูกยืม',
+                    'bg-danger': item.status === 'ซ่อม'
+                  }">
+              <ng-container *ngIf="item.availableQuantity > 0 && item.status === 'ว่าง'">พร้อมยืม</ng-container>
+              <ng-container *ngIf="item.status === 'ถูกยืม'">ไม่ว่าง</ng-container>
+              <ng-container *ngIf="item.status === 'ซ่อม'">กำลังซ่อม</ng-container>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 📜 Tab ประวัติการยืม -->
+    <div class="tab-pane fade" [class.show]="activeTab === 'history'" [class.active]="activeTab === 'history'" id="history">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">ประวัติการยืม-คืน</h5>
+          <p class="card-text">แสดงประวัติการยืม-คืนตามเงื่อนไขที่เลือก</p>
+          <div class="list-group">
+            <div *ngIf="borrowingHistory.length === 0" class="alert alert-info">
+              ไม่พบประวัติการยืมที่ตรงตามเงื่อนไข
+            </div>
+            <div *ngFor="let record of borrowingHistory" class="list-group-item list-group-item-action">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="mb-1">{{ record.itemName }}</h6>
+                  <p class="mb-1">ผู้ยืม: {{ record.borrower }} | รหัส: {{ record.borrowerId }}</p>
+                  <small>วันที่ยืม: {{ record.borrowDate }} | วันที่คืน: {{ record.returnDate || '-' }}</small>
+                </div>
+                <span class="badge" 
+                      [ngClass]="{
+                        'bg-success': record.status === 'คืนแล้ว',
+                        'bg-warning text-dark': record.status === 'ยังไม่คืน' && !record.isOverdue,
+                        'bg-info': record.status === 'จองแล้ว',
+                        'bg-danger': record.isOverdue
+                      }">
+                  <ng-container *ngIf="record.status === 'คืนแล้ว'">✅ คืนแล้ว</ng-container>
+                  <ng-container *ngIf="record.status === 'ยังไม่คืน' && !record.isOverdue">🕒 กำลังยืม</ng-container>
+                  <ng-container *ngIf="record.status === 'จองแล้ว'">🗓️ จองแล้ว</ng-container>
+                  <ng-container *ngIf="record.isOverdue">⚠️ เกินกำหนด</ng-container>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Borrow Modal -->
+  <div class="modal" [class.show]="showBorrowModal" [style.display]="showBorrowModal ? 'block' : 'none'" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">จองอุปกรณ์</h5>
+          <button type="button" class="btn-close" (click)="closeBorrowModal()"></button>
+        </div>
+        <div class="modal-body" *ngIf="selectedItemForBorrow">
+          <div class="mb-3">
+            <h6>{{ getItemEmoji(selectedItemForBorrow.category) }} {{ selectedItemForBorrow.name }}</h6>
+            <p class="text-muted small">{{ selectedItemForBorrow.description }}</p>
+
+          </div>
+          <!-- <div class="alert alert-info">
+            <small>
+              <i class="bi bi-info-circle"></i> อุปกรณ์นี้ยืมได้สูงสุด {{ selectedItemForBorrow.maxBorrowDays }} วัน<br>
+              <i class="bi bi-box"></i> คงเหลือ: {{ selectedItemForBorrow.availableQuantity }}/{{ selectedItemForBorrow.totalQuantity }}
+            </small>
+          </div> -->
+          <form>
+            <hr>
+            <h6>รายละเอียดผู้ยืม</h6>
+     
+            <div class="mb-3">
+              <label class="form-label">รหัสนักศึกษา/บุคลากร</label>
+              <input type="text" class="form-control" [(ngModel)]="borrowForm.borrowerId" name="borrowerId" required>
+              <label class="form-label">ชื่อ-นามสกุล</label>
+              <input type="text" class="form-control" [(ngModel)]="borrowForm.borrowerName" name="borrowerName" required>
+            </div>
+            <!-- <div class="mb-3">
+              <label class="form-label">ชื่อ-นามสกุล</label>
+              <input type="text" class="form-control" [(ngModel)]="borrowForm.borrowerName" name="borrowerName" required>
+            </div> -->
+            <div class="mb-3">
+              <h6>ระบุวันที่ยืม</h6>
+              <hr>
+              <label class="form-label">วันที่ต้องการรับอุปกรณ์</label>
+              <input type="date" class="form-control" [(ngModel)]="borrowForm.pickupDate" 
+                    (change)="onPickupDateChange($event)" 
+                    name="pickupDate" 
+                    [min]="getDateConstraints().min"
+                    [max]="getDateConstraints().max"
+                    required>
+              <small class="text-muted">* สามารถรับอุปกรณ์ได้วันนี้หรือจองล่วงหน้า 1 วัน</small>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">วันที่ต้องคืนอุปกรณ์</label>
+              <input type="date" class="form-control" [(ngModel)]="borrowForm.returnDate" 
+                     name="returnDate" readonly>
+              <!-- <small class="text-muted">* คำนวณตามระยะเวลาการยืมสูงสุดของอุปกรณ์</small> -->
+            </div>
+            <div class="alert alert-warning">
+              <small>
+                <i class="bi bi-info-circle"></i> อุปกรณ์นี้ยืมได้สูงสุด {{ selectedItemForBorrow.maxBorrowDays }} วัน<br>
+                <i class="bi bi-info-circle"></i>หากวันที่คืนตรงกับวันหยุดกรุณาคืนวันทำการถนัดไป<br>
+                <!-- <i class="bi bi-box"></i> คงเหลือ: {{ selectedItemForBorrow.availableQuantity }}/{{ selectedItemForBorrow.totalQuantity }} -->
+              </small>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeBorrowModal()">ยกเลิก</button>
+          <button type="button" class="btn btn-primary" (click)="submitBorrowForm()">ยืนยันการจอง</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Backdrop -->
+  <div class="modal-backdrop fade show" *ngIf="showBorrowModal"></div>
+</div>
+

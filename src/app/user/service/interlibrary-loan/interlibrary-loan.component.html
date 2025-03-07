@@ -1,0 +1,129 @@
+<h3 class="text-center">Interlibrary Loan Request</h3>
+<div class="container mt-4">
+  <div class="card">
+    <div class="card-header">
+      <h4>แบบฟอร์มยืมระหว่างห้องสมุด</h4>
+    </div>
+
+    <div class="card-body">
+      <h4>ข้อมูลผู้ใช้</h4>
+      <form [formGroup]="interlibraryForm" (ngSubmit)="onSubmit()">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group mb-3">
+              <label for="userId">User ID <span class="text-danger">*</span></label>
+              <input type="text" id="userId" class="form-control" formControlName="userId" required>
+              <div *ngIf="interlibraryForm.controls['userId'].invalid && (interlibraryForm.controls['userId'].dirty || interlibraryForm.controls['userId'].touched)" class="text-danger">
+                <div *ngIf="interlibraryForm.controls['userId'].errors?.['required']">
+                  <span>User ID ห้ามว่าง</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group mb-3">
+              <label for="userName">ชื่อผู้ใช้ <span class="text-danger">*</span></label>
+              <input type="text" id="userName" class="form-control" formControlName="userName" required>
+              <div *ngIf="interlibraryForm.controls['userName'].invalid && (interlibraryForm.controls['userName'].dirty || interlibraryForm.controls['userName'].touched)" class="text-danger">
+                <div *ngIf="interlibraryForm.controls['userName'].errors?.['required']">
+                  <span>ชื่อผู้ใช้ ห้ามว่าง</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group mb-3">
+              <label for="email">E-mail (ที่ใช้งานปัจจุบัน) <span class="text-danger">*</span></label>
+              <input type="email" id="email" class="form-control" formControlName="email" placeholder="E-mail ที่ใช้ปัจจุบัน" required>
+              <div *ngIf="interlibraryForm.controls['email'].invalid && (interlibraryForm.controls['email'].dirty || interlibraryForm.controls['email'].touched)" class="text-danger">
+                <div *ngIf="interlibraryForm.controls['email'].errors?.['required']">
+                  <span>E-mail ห้ามว่าง</span>
+                </div>
+                <div *ngIf="interlibraryForm.controls['email'].errors?.['email']">
+                  <span>รูปแบบ E-mail ไม่ถูกต้อง</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group mb-3">
+              <label for="phone">เบอร์โทรศัพท์ (ที่ใช้งานปัจจุบัน) <span class="text-danger">*</span></label>
+              <input type="tel" id="phone" class="form-control" formControlName="phone" placeholder="Phone Number" required>
+              <div *ngIf="interlibraryForm.controls['phone'].invalid && (interlibraryForm.controls['phone'].dirty || interlibraryForm.controls['phone'].touched)" class="text-danger">
+                <div *ngIf="interlibraryForm.controls['phone'].errors?.['required']">
+                  <span>เบอร์โทรศัพท์ ห้ามว่าง</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h4>หนังสือ/เอกสาร ที่ต้องการยืม</h4>
+        <small class="text-danger">
+          * แบบฟอร์มนี้สามารถระบุข้อมูลได้ 1 รายการ กรุณาใส่ข้อมูลให้ครบถ้วน
+        </small>
+        <div class="row">
+          <div class="col-md-3">
+            <div class="form-group mb-3">
+              <label for="callNo">เลขเรียกหนังสือ</label>
+              <input type="text" id="callNo" class="form-control" formControlName="callNo" placeholder="Call No.">
+            </div>
+          </div>
+          <div class="col-md-9">
+            <div class="form-group mb-3">
+              <label for="title">ชื่อหนังสือ / ชื่อบทความ / ชื่อวารสาร <span class="text-danger">*</span></label>
+              <input type="text" id="title" class="form-control" formControlName="title" placeholder="Title of book /Title of article /of periodical including bibliographic details and call number" required>
+              <div *ngIf="interlibraryForm.controls['title'].invalid && (interlibraryForm.controls['title'].dirty || interlibraryForm.controls['title'].touched)" class="text-danger">
+                <div *ngIf="interlibraryForm.controls['title'].errors?.['required']">
+                  <span>ชื่อหนังสือ / ชื่อบทความ / ชื่อวารสาร ห้ามว่าง</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group mb-3">
+              <label for="author">ผู้แต่ง <span class="text-danger">*</span></label>
+              <input type="text" id="author" class="form-control" formControlName="author" placeholder="Author" required>
+              <div *ngIf="interlibraryForm.controls['author'].invalid && (interlibraryForm.controls['author'].dirty || interlibraryForm.controls['author'].touched)" class="text-danger">
+                <div *ngIf="interlibraryForm.controls['author'].errors?.['required']">
+                  <span>ผู้แต่ง ห้ามว่าง</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group mb-3">
+              <label for="note">ข้อมูลเพิ่มเติม</label>
+              <input id="note" class="form-control" formControlName="note" placeholder="Note">
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+
+          <div class="col-md-3">
+            <div class="form-group mb-3">
+              <label for="documentType">ประเภทเอกสารที่ต้องการ</label>
+              <select id="documentType" class="form-select" formControlName="documentType">
+                <option value="" disabled selected>กรุณาเลือกตัวเลือก</option>
+                <option value="book">ตัวเล่มฉบับจริง(ส่งฟรี)</option>
+                <option value="article">สำเนาเอกสาร(หน้าละ1บาท)</option>
+                <option value="journal">สแกนไฟล์(หน้าละ5บาท)</option>
+              </select>
+            </div>
+          </div>
+
+
+        </div>
+        <button type="submit" class="btn btn-primary">ส่งคำขอ</button>
+      </form>
+    </div>
+    <div class="card-footer text-muted">
+      ** หลังจากส่งคำขอ ท่านสามารถตรวจสอบสถานะการยืมผ่านช่องทางที่ได้รับแจ้งตามที่ระบุ
+    </div>
+  </div>
+</div>

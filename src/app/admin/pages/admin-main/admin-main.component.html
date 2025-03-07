@@ -1,0 +1,29 @@
+<app-admin-navbar></app-admin-navbar>
+<app-admin-hero *ngIf="!showLibraryOfThings"></app-admin-hero>
+<div class="service-container">
+    <div class="d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center">
+            <i class="fa-duotone fa-layer-group"
+                style="--fa-primary-color: #4c9493; --fa-secondary-color: #184337; font-size: 36px;"></i>
+            <h2 class="ms-3 mb-0">SERVICE</h2>
+        </div>
+        <button *ngIf="showLibraryOfThings" class="btn btn-secondary" (click)="onBackClick()">กลับ</button>
+    </div>
+
+    <div class="row mt-4" *ngIf="!showLibraryOfThings">
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body" (click)="onLibraryOfThingeClick()">
+                    <h5 class="card-title">Library of Things</h5>
+                    <p class="card-text">ระบบยืมอุปกรณ์เพื่อการเรียนรู้และใช้งาน</p>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    
+    <div class="mt-4" *ngIf="showLibraryOfThings">
+        <app-admin-library-of-things></app-admin-library-of-things>
+    </div>
+
+    <app-footer></app-footer>

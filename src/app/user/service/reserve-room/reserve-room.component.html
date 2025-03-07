@@ -1,0 +1,116 @@
+<div class="reserve-room">
+  <h2 class="text-center">Reserve a Room</h2>
+
+  <!-- Tabs -->
+  <ul class="nav nav-pills justify-content-center">
+    <li class="nav-item" *ngFor="let type of roomTypes">
+      <a
+        class="nav-link"
+        [ngClass]="{ 'active': selectedType === type }"
+        (click)="selectType(type)">
+        {{ getTypeName(type) }}
+      </a>
+    </li>
+  </ul>
+
+  <!-- Content -->
+  <div class="card mt-4">
+    <div class="card-header">
+      <h4>เลือกห้องที่ต้องการ</h4>
+    </div>
+    <div class="card-body">
+      <ng-container *ngIf="selectedType">
+        <div *ngFor="let building of getBuildingsByType(selectedType)">
+          <h4>อาคาร {{ building.building }}</h4>
+          <div *ngFor="let floor of building.floors">
+            <h5>ชั้น {{ floor.floor }}</h5>
+            <div class="row">
+              <div class="col-md-3" *ngFor="let room of floor.rooms">
+                <div class="card text-center">
+                  <div class="card-body">
+                    <h5 class="card-title">ห้อง {{ room.number }}</h5>
+                    <p class="card-text" hidden>
+                      วิทยาเขต: {{ room.location | uppercase }}
+                    </p>
+                    <p class="card-text">รองรับ: {{ room.capacity }} คน</p>
+                    <p class="card-text">อุปกรณ์: {{ room.equipment.join(', ') }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <hr>
+        </div>
+      </ng-container>
+    </div>
+    <div class="card-footer text-muted">
+
+      * ท่านสามารถจองห้องได้ 1 วัน 3 ชั่วโมง
+    </div>
+  </div>
+</div>
+
+
+
+<!-- 
+<div class="card" data-bs-toggle="modal" data-bs-target="#selectCampusModal">
+  <div class="card-body">
+    <h5 class="card-title">Reserve a Room</h5>
+    <p class="card-text">เลือกวิทยาเขตที่ต้องการจองห้อง</p>
+  </div>
+</div>
+
+<div class="modal fade" id="selectCampusModal" tabindex="-1" aria-labelledby="selectCampusModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="selectCampusModalLabel">เลือกวิทยาเขต</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <div class="card" (click)="selectCampus('กำแพงแสน')" data-bs-toggle="modal" data-bs-target="#kpsModal">
+              <div class="card-body">
+                <h5 class="card-title text-center">กำแพงแสน</h5>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <div class="card" (click)="selectCampus('ศรีราชา')">
+              <div class="card-body">
+                <h5 class="card-title text-center">ศรีราชา</h5>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <div class="card" (click)="selectCampus('สกลนคร')">
+              <div class="card-body">
+                <h5 class="card-title text-center">สกลนคร</h5>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="kpsModal" tabindex="-1" aria-labelledby="kpsModalLabel" aria-hidden="true">
+
+    <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="kpsModalLabel">ข้อมูลห้องอ่านหนังสือ วิทยาเขตกำแพงแสน</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+
+        <app-kps></app-kps>
+      </div>
+    </div>
+  </div>
+</div>
+ -->

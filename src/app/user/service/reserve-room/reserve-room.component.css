@@ -1,0 +1,49 @@
+.card {
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+  }
+  
+  .card:hover {
+    transform: translateY(-10px); /* ยกการ์ดขึ้นเมื่อ hover */
+  }
+  
+  .card-title {
+    font-size: 18px;
+  }
+  
+  .card-text {
+    color: #6c757d;
+  }
+  
+  /* เพิ่มระยะห่างปกติ */
+.card {
+    margin-bottom: 15px; /* ระยะห่างปกติ */
+  }
+  
+  /* เพิ่มระยะห่างมากขึ้นสำหรับหน้าจอขนาดเล็ก */
+  @media (max-width: 768px) {
+    .card {
+      margin-bottom: 16px; /* เพิ่มระยะห่างเมื่อหน้าจอเล็ก */
+    }
+  }
+  .nav-pills .nav-link {
+    width: 100%; /* ทำให้แต่ละ Tab มีความกว้างเต็ม */
+    padding: 10px 15px;
+
+    color: #333; /* สีตัวอักษร (Inactive) */
+    font-size: 16px;
+    border-radius: 8px;
+    margin: 0 5px; /* เพิ่มระยะห่างระหว่างปุ่ม */
+    text-align: center;
+  }
+  
+  .nav-pills .nav-link.active {
+    background-color: #4c9493; /* สีพื้นหลังปุ่ม (Active) */
+    color: white; /* สีตัวอักษรปุ่ม (Active) */
+  }
+  
+.nav-link {
+  cursor: pointer;
+  text-align: center;
+}

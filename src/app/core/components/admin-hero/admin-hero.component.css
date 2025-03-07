@@ -1,0 +1,16 @@
+
+  
+  .hero-container i {
+    margin-bottom: 10px; /* เพิ่มระยะห่างระหว่างไอคอนและข้อความ */
+  }
+  
+  .hero-container h1 {
+    font-size: 36px;
+    margin-bottom: 10px; /* เพิ่มระยะห่างระหว่างหัวข้อและคำอธิบาย */
+  }
+  
+  .hero-container p {
+    font-size: 18px;
+    color: #6c757d;
+  }
+  

@@ -1,0 +1,23 @@
+
+.nav-tabs {
+    display: flex;
+    width: 100%;
+    background-color: #f8f9fa; /* สีพื้นหลังของ Tabs */
+    border-radius: 8px;
+    padding: 5px;
+}
+.nav-item {
+    flex: 1; /* ทำให้แต่ละ Tab มีขนาดเท่ากัน */
+    text-align: center;
+}
+.nav-link {
+    width: 100%;
+    border: none;
+    color: #6c757d;
+}
+.nav-link.active {
+    background-color: #ffffff;
+    color: #000;
+    font-weight: bold;
+    border-radius: 8px;
+}

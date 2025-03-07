@@ -1,0 +1,107 @@
+<!-- Modal อนุมัติการยืม -->
+<div class="modal fade" id="approveModal" tabindex="-1" aria-labelledby="approveModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header bg-light">
+          <h5 class="modal-title" id="approveModalLabel">อนุมัติการยืมอุปกรณ์</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row" *ngIf="borrowRequest">
+            <div class="col-md-5">
+              <div class="text-center mb-3">
+                <h5 class="card-title">{{ borrowRequest.equipment.name }}</h5>
+                <h6 class="text-muted mb-1">รหัส: {{ borrowRequest.equipment.id }}</h6>
+                <span class="badge bg-warning mb-3">รออนุมัติ</span>
+              </div>
+  
+              <div class="card border mb-3">
+                <div class="card-body">
+                  <h6 class="mb-3">รายละเอียดการยืม</h6>
+                  <div class="mb-2 row">
+                    <div class="col-6 text-muted">รหัสการยืม:</div>
+                    <div class="col-6">{{ borrowRequest.id }}</div>
+                  </div>
+                  <div class="mb-2 row">
+                    <div class="col-6 text-muted">วันที่ขอยืม:</div>
+                    <div class="col-6">{{ borrowRequest.borrowDate }}</div>
+                  </div>
+                  <div class="mb-2 row">
+                    <div class="col-6 text-muted">กำหนดคืน:</div>
+                    <div class="col-6">{{ borrowRequest.dueDate }}</div>
+                  </div>
+                  
+                  <!-- ข้อมูล Serial Number อุปกรณ์ -->
+                  <div class="mb-2 row">
+                    <div class="col-6 text-muted">Serial Number:</div>
+                    <div class="col-6">{{ getEquipmentSerialNumber(borrowRequest.equipment.id) }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-md-7">
+              <div class="card border mb-3">
+                <div class="card-body">
+                  <h6 class="mb-3">ข้อมูลผู้ยืม</h6>
+                  <div class="d-flex align-items-center mb-3">
+                    <div>
+                      <h6 class="mb-0">{{ borrowRequest.name }}</h6>
+                      <div class="text-muted small">รหัสนักศึกษา: {{ borrowRequest.studentId }}</div>
+                      <div class="text-muted small">คณะ: {{ borrowRequest.department }}</div>
+                    </div>
+                  </div>
+                  <div class="row mb-2">
+                    <div class="col-md-12">
+                      <div class="mb-2 row">
+                        <div class="col-4 text-muted">เบอร์โทร:</div>
+                        <div class="col-8">{{ borrowRequest.contact }}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+  
+              <div class="card border mb-4">
+                <div class="card-body">
+                  <h6 class="mb-3">บันทึกการอนุมัติ</h6>
+  
+                  <div class="mb-3">
+                    <label class="form-label">สภาพอุปกรณ์ก่อนให้ยืม</label>
+                    <select class="form-select mb-3" [(ngModel)]="equipmentCondition">
+                      <option value="perfect">สมบูรณ์ - ไม่มีความเสียหาย</option>
+                      <option value="good">ดี - มีร่องรอยการใช้งานเล็กน้อย</option>
+                      <option value="fair">พอใช้ - มีร่องรอยการใช้งานปานกลาง</option>
+                    </select>
+                  </div>
+  
+                  <div class="mb-3">
+                    <label class="form-label">หมายเหตุ (ถ้ามี)</label>
+                    <textarea class="form-control" rows="3" [(ngModel)]="approveNote"
+                      placeholder="บันทึกหมายเหตุการยืม..."></textarea>
+                  </div>
+                  
+                  <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="printDocument" [(ngModel)]="printDocument" required>
+                    <label class="form-check-label" for="printDocument">
+                      พิมพ์เอกสารการยืมหลังอนุมัติ
+                      <span class="text-danger">*</span>
+                    </label>
+                  </div>
+                  <div class="text-danger small" *ngIf="!printDocument">
+                    กรุณายืนยันการพิมพ์เอกสารเพื่อดำเนินการต่อ
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+          <button type="button" class="btn btn-success" [disabled]="!printDocument" (click)="confirmApprove()">
+            ยืนยันการอนุมัติ
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>

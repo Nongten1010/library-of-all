@@ -1,0 +1,73 @@
+<!-- Tabs สำหรับเลือกไซต์ -->
+
+<ul class="nav nav-tabs" id="roomTabs" role="tablist">
+  <li class="nav-item" role="presentation">
+    <button class="nav-link active" id="siteG-tab" data-bs-toggle="tab" data-bs-target="#siteG" type="button"
+      role="tab" aria-controls="siteG" aria-selected="true">
+      ห้องไซต์ G (4-8 คน)
+    </button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="siteS-tab" data-bs-toggle="tab" data-bs-target="#siteS" type="button"
+      role="tab" aria-controls="siteS" aria-selected="false">
+      ห้องไซต์ S (1-2 คน)
+    </button>
+  </li>
+</ul>
+
+<!-- Tab content -->
+<div class="tab-content mt-3" id="roomTabsContent">
+  <!-- ห้องไซต์ G -->
+  <div class="tab-pane fade show active" id="siteG" role="tabpanel" aria-labelledby="siteG-tab">
+    <h6>ห้องไซต์ G (4-8 คน)</h6>
+    <div class="card mb-3" *ngFor="let room of siteGRooms; trackBy: trackByOsId">
+      <div class="card-header" (click)="toggleRoom(room, $event)">
+        {{ room.name }}
+      </div>
+      
+      <div class="card-body">
+        <p class="card-text">{{ room.details }}</p>
+        <div *ngIf="room.selected">
+          <hr />
+          <div class="mb-3">
+            <label for="date{{ room.id }}" class="form-label">วันที่</label>
+            <input type="date" class="form-control" id="date{{ room.id }}" [(ngModel)]="room.date">
+          </div>
+          <div class="mb-3">
+            <label for="time{{ room.id }}" class="form-label">เวลา</label>
+            <!-- <select class="form-select multiple-select-field-{{ room.id }}" id="time{{ room.id }}" multiple [(ngModel)]="room.time">
+              <option *ngFor="let timeSlot of timeSlots" [value]="timeSlot">{{ timeSlot }}</option>
+            </select> -->
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ห้องไซต์ S -->
+  <div class="tab-pane fade" id="siteS" role="tabpanel" aria-labelledby="siteS-tab">
+    <h6>ห้องไซต์ S (1-2 คน)</h6>
+    <div class="card mb-3" *ngFor="let room of siteSRooms; trackBy: trackByOsId">
+      <div class="card-header" (click)="toggleRoom(room, $event)">
+        {{ room.name }}
+      </div>
+      <div class="card-body">
+        <p class="card-text">{{ room.details }}</p>
+        <div *ngIf="room.selected">
+          <hr />
+          <div class="mb-3">
+            <label for="date{{ room.id }}" class="form-label">วันที่</label>
+            <input type="date" class="form-control" id="date{{ room.id }}" [(ngModel)]="room.date">
+          </div>
+          <div class="mb-3">
+            <label for="time{{ room.id }}" class="form-label">เวลา</label>
+            <!-- <select class="form-select" id="time{{ room.id }}" multiple [(ngModel)]="room.time">
+              <option *ngFor="let timeSlot of timeSlots" [value]="timeSlot">{{ timeSlot }}</option>
+            </select> -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

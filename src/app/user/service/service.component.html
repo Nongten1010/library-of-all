@@ -1,0 +1,69 @@
+<div class="service-container">
+  <div class="d-flex align-items-center justify-content-between">
+    <div class="d-flex align-items-center">
+      <i class="fa-duotone fa-layer-group"
+        style="--fa-primary-color: #4c9493; --fa-secondary-color: #184337; font-size: 36px;"></i>
+      <h2 class="ms-3 mb-0">SERVICE</h2>
+    </div>
+    <button *ngIf="showReserveRoom || showInterlibraryLoan || showPurchasingResources || showEvents || showLibraryOfThinge"
+      class="btn btn-secondary" (click)="onBackClick()">กลับ</button>
+  </div>
+
+  <div class="row mt-4" *ngIf="!showReserveRoom && !showInterlibraryLoan && !showPurchasingResources && !showEvents&& !showLibraryOfThinge">
+    <div class="col-md-3">
+      <div class="card" (click)="onReserveRoomClick()">
+        <div class="card-body">
+          <h5 class="card-title">Reserve a Room</h5>
+          <p class="card-text">เลือกวิทยาเขตที่ต้องการจองห้อง</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card" (click)="onInterlibraryLoanClick()">
+        <div class="card-body">
+          <h5 class="card-title">Interlibrary Loan</h5>
+          <p class="card-text">ยืมหนังสืิอระหว่างห้องสมุด</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card" (click)="onPurchasingResourcesClick()">
+        <div class="card-body">
+          <h5 class="card-title">Purchasing Resources</h5>
+          <p class="card-text">รายละเอียดเกี่ยวกับการสั่งซื้อทรัพยากร</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card" (click)="onLibraryOfThingeClick()">
+        <div class="card-body">
+          <h5 class="card-title">Library of Things</h5>
+          <p class="card-text">ระบบยืมอุปกรณ์เพื่อการเรียนรู้และใช้งาน</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card" (click)="onEventsClick()">
+        <div class="card-body">
+          <h5 class="card-title">Event</h5>
+          <p class="card-text">รายละเอียดเกี่ยวกับกิจกรรม</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="mt-4" *ngIf="showReserveRoom">
+    <app-reserve-room></app-reserve-room>
+  </div>
+  <div class="mt-4" *ngIf="showInterlibraryLoan">
+    <app-interlibrary-loan></app-interlibrary-loan>
+  </div>
+  <div class="mt-4" *ngIf="showPurchasingResources">
+    <app-purchasing-resources></app-purchasing-resources>
+  </div>
+  <div class="mt-4" *ngIf="showEvents">
+    <app-events></app-events>
+  </div>
+  <div class="mt-4" *ngIf="showLibraryOfThinge">
+    <app-library-of-thinge></app-library-of-thinge>
+  </div>
+</div>

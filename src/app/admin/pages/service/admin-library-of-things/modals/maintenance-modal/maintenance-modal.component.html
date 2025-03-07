@@ -1,0 +1,186 @@
+<div class="modal fade" #maintenanceModal id="maintenanceModal" tabindex="-1" aria-labelledby="maintenanceModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title" id="maintenanceModalLabel">การจัดการซ่อมบำรุงอุปกรณ์</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @if (borrowRequest) {
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="text-center mb-3">
+                            <h5 class="card-title">{{ borrowRequest.equipment.name }}</h5>
+                            <h6 class="text-muted mb-1">รหัส: {{ borrowRequest.equipment.id }}</h6>
+                            <span class="badge bg-warning mb-3">กำลังซ่อมบำรุง</span>
+                        </div>
+
+                        <div class="card border mb-3">
+                            <div class="card-body">
+                                <h6 class="mb-3">รายละเอียดอุปกรณ์</h6>
+                                <div class="mb-2 row">
+                                    <div class="col-6 text-muted">หมวดหมู่:</div>
+                                    <div class="col-6">{{ getCategoryName(borrowRequest.equipment.category) }}</div>
+                                </div>
+                                <div class="mb-2 row">
+                                 <div class="col-6 text-muted">Serial Number:</div>
+                                    <div class="col-6">{{ getEquipmentSerialNumber(borrowRequest.equipment.id) }}</div>
+                                </div>
+                                
+                                <div class="mb-2 row">
+                                    <div class="col-6 text-muted">สถานะปัจจุบัน:</div>
+                                    <div class="col-6">
+                                        <span class="badge" [class]="getBadgeClass(borrowRequest.status)">
+                                            {{ getStatusText(borrowRequest.status) }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card border mb-3">
+                            <div class="card-body">
+                                <h6 class="mb-3">ข้อมูลผู้ยืม</h6>
+                                <div class="mb-2 row">
+                                    <div class="col-5 text-muted">ชื่อผู้ยืม:</div>
+                                    <div class="col-7">{{ borrowRequest.name }}</div>
+                                </div>
+                                <div class="mb-2 row">
+                                    <div class="col-5 text-muted">รหัสนักศึกษา:</div>
+                                    <div class="col-7">{{ borrowRequest.studentId }}</div>
+                                </div>
+                                <div class="mb-2 row">
+                                    <div class="col-5 text-muted">เบอร์ติดต่อ:</div>
+                                    <div class="col-7">{{ borrowRequest.contact }}</div>
+                                </div>
+                                <div class="mb-2 row">
+                                    <div class="col-5 text-muted">คณะ:</div>
+                                    <div class="col-7">{{ borrowRequest.department }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-7">
+                        <div class="card border mb-4">
+                            <div class="card-body">
+                                <h6 class="mb-3">ข้อมูลการซ่อมบำรุง</h6>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">วันที่เริ่มซ่อมบำรุง</label>
+                                    <input type="date" class="form-control" (input)="onStartDateChange($event)" [value]="startDate">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">สาเหตุที่ต้องซ่อม <span class="text-danger">*</span></label>
+                                    <select class="form-select" (change)="onReasonChange($event)" required>
+                                        <option value="">-- เลือกสาเหตุ --</option>
+                                        <option value="damaged">อุปกรณ์เสียหายจากการใช้งาน</option>
+                                        <option value="malfunction">อุปกรณ์ทำงานผิดปกติ</option>
+                                        <option value="routine">การซ่อมบำรุงตามระยะ</option>
+                                        <option value="upgrade">การอัพเกรดอุปกรณ์</option>
+                                        <option value="other">อื่นๆ (โปรดระบุ)</option>
+                                    </select>
+                                </div>
+                                
+                                @if (reason === 'other') {
+                                <div class="mb-3">
+                                    <label class="form-label">ระบุสาเหตุอื่นๆ <span class="text-danger">*</span></label>
+                                    <textarea class="form-control" rows="2" (input)="onReasonNoteChange($event)" 
+                                              placeholder="โปรดระบุสาเหตุการซ่อม..." required></textarea>
+                                </div>
+                                }
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">รายละเอียดความเสียหาย <span class="text-danger">*</span></label>
+                                    <textarea class="form-control" rows="3" (input)="onDamageDetailsChange($event)" 
+                                              placeholder="อธิบายรายละเอียดความเสียหายหรือปัญหาที่พบ..." required></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card border mb-4">
+                            <div class="card-body">
+                                <h6 class="mb-3">แผนการซ่อมบำรุง</h6>
+
+                                <div class="mb-3">
+                                    <label class="form-label">ประเภทการซ่อมบำรุง <span class="text-danger">*</span></label>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-2">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" 
+                                                       name="maintenanceType" id="internal" value="internal"
+                                                       (change)="onMaintenanceTypeChange($event)">
+                                                <label class="form-check-label" for="internal">
+                                                    ซ่อมภายใน (เจ้าหน้าที่)
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-2">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" 
+                                                       name="maintenanceType" id="external" value="external"
+                                                       (change)="onMaintenanceTypeChange($event)">
+                                                <label class="form-check-label" for="external">
+                                                    ส่งซ่อมภายนอก
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @if (maintenanceType === 'internal') {
+                                <div class="mb-3">
+                                    <label class="form-label">ชื่อเจ้าหน้าที่ผู้ซ่อม <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" (input)="onTechnicianNameChange($event)" 
+                                           placeholder="ระบุชื่อเจ้าหน้าที่ที่ทำการซ่อม">
+                                </div>
+                                }
+
+                                @if (maintenanceType === 'external') {
+                                <div class="mb-3">
+                                    <label class="form-label">ชื่อบริษัท/ร้านที่ส่งซ่อม <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" (input)="onVendorNameChange($event)" 
+                                           placeholder="ระบุชื่อบริษัทหรือร้านที่ส่งซ่อม">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">ค่าใช้จ่ายในการซ่อม (บาท)</label>
+                                    <input type="number" class="form-control" (input)="onRepairCostChange($event)" 
+                                           placeholder="ระบุค่าใช้จ่ายในการซ่อม">
+                                </div>
+                                }
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">คาดการณ์วันที่ซ่อมเสร็จ</label>
+                                    <input type="date" class="form-control" (input)="onExpectedCompletionDateChange($event)">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">หมายเหตุเพิ่มเติม</label>
+                                    <textarea class="form-control" rows="2" (input)="onMaintenanceNotesChange($event)" 
+                                              placeholder="หมายเหตุเพิ่มเติมเกี่ยวกับการซ่อม..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="confirmMaintenance" (change)="onConfirmMaintenanceChange($event)">
+                            <label class="form-check-label" for="confirmMaintenance">
+                                <strong>ยืนยันการดำเนินการ:</strong> ข้าพเจ้ายืนยันว่าข้อมูลที่กรอกถูกต้องและต้องการบันทึกการซ่อมบำรุง
+                                <span class="text-danger">*</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                <button type="button" class="btn btn-success" [disabled]="!isFormValid()" (click)="confirmMaintenance()">
+                    <i class="bi bi-wrench me-1"></i> บันทึกการซ่อมบำรุง
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

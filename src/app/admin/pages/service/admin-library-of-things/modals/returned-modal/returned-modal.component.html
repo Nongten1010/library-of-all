@@ -1,0 +1,206 @@
+<div class="modal fade" id="returnedModal" tabindex="-1" aria-labelledby="returnedModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title" id="returnedModalLabel">ยืนยันการคืนอุปกรณ์</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row" *ngIf="borrowRequest">
+                    <div class="col-md-5">
+                        <div class="text-center mb-3">
+                            <h5 class="card-title">{{ borrowRequest.equipment.name }}</h5>
+                            <h6 class="text-muted mb-1">รหัส: {{ borrowRequest.equipment.id }}</h6>
+                            <span class="badge"
+                                [class]="borrowRequest.status === 'overdue' ? 'bg-danger' : 'bg-primary'">
+                                {{ borrowRequest.status === 'overdue' ? 'เกินกำหนด' : 'กำลังยืม' }}
+                            </span>
+                        </div>
+
+                        <div class="card border mb-3">
+                            <div class="card-body">
+                                <h6 class="mb-3">รายละเอียดการยืม</h6>
+                                <div class="mb-2 row">
+                                    <div class="col-6 text-muted">รหัสการยืม:</div>
+                                    <div class="col-6">{{ borrowRequest.id }}</div>
+                                </div>
+                                <div class="mb-2 row">
+                                    <div class="col-6 text-muted">วันที่ยืม:</div>
+                                    <div class="col-6">{{ borrowRequest.borrowDate }}</div>
+                                </div>
+                                <div class="mb-2 row">
+                                    <div class="col-6 text-muted">กำหนดคืน:</div>
+                                    <div class="col-6" [class.text-danger]="isOverdue()">{{ borrowRequest.dueDate }}
+                                    </div>
+                                </div>
+                                <div class="mb-2 row" *ngIf="isOverdue()">
+                                    <div class="col-6 text-muted">เกินกำหนด:</div>
+                                    <div class="col-6 text-danger">{{ calculateOverdueDays() }} วัน</div>
+                                </div>
+                                <div class="mb-2 row">
+                                    <div class="col-6 text-muted">Serial Number:</div>
+                                    <div class="col-6">{{ getEquipmentSerialNumber(borrowRequest.equipment.id) }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-7">
+                        <div class="card border mb-3">
+                            <div class="card-body">
+                                <h6 class="mb-3">ข้อมูลผู้ยืม</h6>
+                                <div class="d-flex align-items-center mb-3">
+                                    <div>
+                                        <h6 class="mb-0">{{ borrowRequest.name }}</h6>
+                                        <div class="text-muted small">รหัสนักศึกษา: {{ borrowRequest.studentId }}</div>
+                                        <div class="text-muted small">คณะ: {{ borrowRequest.department }}</div>
+                                    </div>
+                                </div>
+                                <div class="mb-2 row">
+                                    <div class="col-4 text-muted">เบอร์โทร:</div>
+                                    <div class="col-8">{{ borrowRequest.contact }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card border mb-4">
+                            <div class="card-body">
+                                <h6 class="mb-3">บันทึกการตรวจสอบ</h6>
+
+                                <div class="mb-3">
+                                    <label class="form-label">สภาพอุปกรณ์เมื่อรับคืน</label>
+                                    <select class="form-select mb-3" [(ngModel)]="returnCondition">
+                                        <option value="perfect">สมบูรณ์ - ไม่มีความเสียหาย</option>
+                                        <option value="good">ดี - มีร่องรอยการใช้งานเล็กน้อย</option>
+                                        <option value="fair">พอใช้ - มีร่องรอยการใช้งานปานกลาง</option>
+                                        <option value="damaged">เสียหาย - ต้องส่งซ่อม</option>
+                                        <option value="lost">สูญหาย - อุปกรณ์ไม่ครบ</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">รายละเอียดความเสียหาย (ถ้ามี)</label>
+                                    <textarea class="form-control" rows="3" [(ngModel)]="returnNote"
+                                        placeholder="กรอกรายละเอียดความเสียหายที่พบ..."></textarea>
+                                </div>
+
+                                <div class="alert alert-warning"
+                                    *ngIf="returnCondition === 'damaged' || returnCondition === 'lost'">
+                                    <i class="bi bi-exclamation-triangle me-2"></i>
+                                    <strong>หมายเหตุ:</strong> อุปกรณ์มีความเสียหายหรือสูญหาย
+                                    ผู้ยืมอาจต้องรับผิดชอบค่าเสียหายตามเงื่อนไข
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ส่วนของค่าปรับ (แสดงเฉพาะเมื่อเกินกำหนด) -->
+                        <div class="card border mb-4" *ngIf="fineAmount > 0">
+                            <div class="card-body">
+                                <h6 class="mb-3 text-danger">ค่าปรับเกินกำหนด</h6>
+
+                                <div class="row mb-2">
+                                    <div class="col-md-6">
+                                        <div class="mb-2 row">
+                                            <div class="col-6 text-muted">จำนวนวันเกินกำหนด:</div>
+                                            <div class="col-6 text-danger fw-bold">{{ calculateOverdueDays() }} วัน
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-2 row">
+                                          <div class="col-6 text-muted">ค่าปรับวันละ:</div>
+                                          <div class="col-6">{{ fineRate }} บาท</div>
+                                        </div>
+                                      </div>
+                                </div>
+
+                                <div class="mb-3 row">
+                                    <div class="col-md-6">
+                                        <div class="mb-2 row">
+                                            <div class="col-6 text-muted">ค่าปรับรวม:</div>
+                                            <div class="col-6 text-danger fw-bold">{{ fineAmount }} บาท</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <hr>
+
+                                <div class="mb-3">
+                                    <label class="form-label">วิธีการชำระค่าปรับ:</label>
+                                    <div class="d-flex">
+                                        <div class="form-check me-4">
+                                            <input class="form-check-input" type="radio" name="finePaymentMethod"
+                                                id="transfer" [(ngModel)]="finePaymentMethod" value="transfer">
+                                            <label class="form-check-label" for="transfer">
+                                                โอนเงิน
+                                            </label>
+                                        </div>
+                                        <div class="form-check me-4">
+                                            <input class="form-check-input" type="radio" name="finePaymentMethod"
+                                                id="cash" [(ngModel)]="finePaymentMethod" value="cash">
+                                            <label class="form-check-label" for="cash">
+                                                เงินสด
+                                            </label>
+                                        </div>
+                              
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="finePaymentMethod"
+                                                id="waived" [(ngModel)]="finePaymentMethod" value="waived">
+                                            <label class="form-check-label" for="waived">
+                                                ยกเว้นค่าปรับ
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3" *ngIf="finePaymentMethod !== 'waived'">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="finePaymentComplete"
+                                            [(ngModel)]="finePaymentComplete">
+                                        <label class="form-check-label" for="finePaymentComplete">
+                                            ยืนยันว่าได้รับชำระค่าปรับแล้ว
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">หมายเหตุค่าปรับ (ถ้ามี):</label>
+                                    <textarea class="form-control" rows="2" [(ngModel)]="fineNote"
+                                        placeholder="กรอกหมายเหตุเกี่ยวกับค่าปรับ เช่น เลขที่ใบเสร็จ หรือเหตุผลในการยกเว้นค่าปรับ..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- การยอมรับเงื่อนไข - แค่ checkbox เดียว -->
+                        <div class="card border mb-3">
+                            <div class="card-body">
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="acceptTerms"
+                                        [(ngModel)]="acceptTerms" required>
+                                    <label class="form-check-label" for="acceptTerms">
+                                        <strong>ยอมรับเงื่อนไขการคืน:</strong> ข้าพเจ้ายอมรับว่าจะได้รับการติดต่อภายใน
+                                        14 วัน หากพบว่าอุปกรณ์มีปัญหาหลังจากการคืน และยินดีรับผิดชอบตามเงื่อนไข
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                </div>
+
+                                <!-- ข้อความแสดงเมื่อยังไม่ได้ติ๊กยอมรับเงื่อนไข -->
+                                <div class="text-danger small" *ngIf="!acceptTerms">
+                                    กรุณายอมรับเงื่อนไขเพื่อดำเนินการต่อ
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                <button type="button" class="btn btn-success"
+                    [disabled]="!acceptTerms || (fineAmount > 0 && finePaymentMethod !== 'waived' && !finePaymentComplete)"
+                    (click)="confirmReturn()">
+                    ยืนยันการคืน
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

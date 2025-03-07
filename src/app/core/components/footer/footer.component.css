@@ -1,0 +1,50 @@
+.footer {
+    background-color: #ffffff; /* สีพื้นหลังเป็นสีขาว */
+    color: #333333; /* สีข้อความ */
+    padding: 5px 0;
+    text-align: center;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1); /* เพิ่มเงาเบาๆ */
+    border-top: 1px solid #dddddd; /* เพิ่มเส้นขอบด้านบน */
+
+  }
+  
+  .footer .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex; /* ใช้ Flexbox เพื่อจัดการ */
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .footer ul {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0;
+    display: flex; /* จัดลิงก์แบบแนวนอน */
+    justify-content: center;
+    gap: 20px; /* ช่องว่างระหว่างลิงก์ */
+  }
+  
+  .footer ul li {
+    margin: 0;
+  }
+  
+  .footer ul li a {
+    color: #4c9493; /* สีลิงก์ให้เข้ากับธีม */
+    text-decoration: none; /* ไม่มีเส้นใต้ */
+    font-weight: 500; /* เพิ่มความหนาเล็กน้อย */
+    transition: color 0.3s ease; /* เพิ่มเอฟเฟกต์ hover */
+  }
+  
+  .footer ul li a:hover {
+    color: #184337; /* เปลี่ยนสีลิงก์เมื่อ hover */
+  }
+  
+  .footer p {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #666666; /* สีข้อความให้ดูอ่อนลง */
+  }
+  
+  

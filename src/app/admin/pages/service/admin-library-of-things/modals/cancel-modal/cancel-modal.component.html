@@ -1,0 +1,88 @@
+<div class="modal fade" #cancelModal id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="cancelModalLabel">ยืนยันการยกเลิกรายการ</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @if (borrowRequest) {
+                <div class="alert alert-warning mb-4">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <strong>คำเตือน:</strong> การดำเนินการนี้ไม่สามารถย้อนกลับได้ กรุณาตรวจสอบให้แน่ใจก่อนดำเนินการ
+                </div>
+
+                <div class="card border mb-4">
+                    <div class="card-body">
+                        <h6 class="card-title mb-3">ข้อมูลรายการที่จะยกเลิก</h6>
+                        
+                        <div class="mb-2 row">
+                            <div class="col-5 text-muted">รหัสรายการ:</div>
+                            <div class="col-7 fw-bold">{{ borrowRequest.id }}</div>
+                        </div>
+                        <div class="mb-2 row">
+                            <div class="col-5 text-muted">อุปกรณ์:</div>
+                            <div class="col-7">{{ borrowRequest.equipment.name }}</div>
+                        </div>
+                        <div class="mb-2 row">
+                            <div class="col-5 text-muted">รหัสอุปกรณ์:</div>
+                            <div class="col-7">{{ borrowRequest.equipment.id }}</div>
+                        </div>
+                        <div class="mb-2 row">
+                            <div class="col-5 text-muted">ผู้ยืม:</div>
+                            <div class="col-7">{{ borrowRequest.name }}</div>
+                        </div>
+                        <div class="mb-2 row">
+                            <div class="col-5 text-muted">วันที่ยืม:</div>
+                            <div class="col-7">{{ borrowRequest.borrowDate }}</div>
+                        </div>
+                        <div class="mb-2 row">
+                            <div class="col-5 text-muted">สถานะปัจจุบัน:</div>
+                            <div class="col-7">
+                                <span class="badge" [class]="getBadgeClass(borrowRequest.status)">
+                                    {{ getStatusText(borrowRequest.status) }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="cancelReason" class="form-label">เหตุผลในการยกเลิก <span class="text-danger">*</span></label>
+                    <select class="form-select mb-2" id="cancelReason" (change)="onCancelReasonChange($event)" required>
+                        <option value="">-- เลือกเหตุผล --</option>
+                        <option value="user-request">ผู้ยืมขอยกเลิกด้วยตนเอง</option>
+                        <option value="wrong-info">ข้อมูลไม่ถูกต้อง</option>
+                        <option value="equipment-unavailable">อุปกรณ์ไม่พร้อมให้บริการ</option>
+                        <option value="duplicate">รายการซ้ำซ้อน</option>
+                        <option value="other">อื่นๆ (โปรดระบุด้านล่าง)</option>
+                    </select>
+                </div>
+                
+                @if (cancelReason === 'other') {
+                <div class="mb-3">
+                    <label for="cancelNote" class="form-label">ระบุเหตุผลอื่นๆ <span class="text-danger">*</span></label>
+                    <textarea class="form-control" id="cancelNote" rows="3" (input)="onCancelNoteChange($event)" 
+                              placeholder="โปรดระบุเหตุผลในการยกเลิกรายการนี้..." required></textarea>
+                </div>
+                }
+
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="notifyUser" (change)="onNotifyUserChange($event)">
+                    <label class="form-check-label" for="notifyUser">
+                        แจ้งเตือนผู้ยืมเกี่ยวกับการยกเลิกรายการนี้
+                    </label>
+                </div>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">ปิด</button>
+                <button type="button" class="btn btn-danger" 
+                        [disabled]="!isFormValid()" 
+                        (click)="confirmCancel()">
+                    <i class="bi bi-trash me-1"></i> ยืนยันการยกเลิก
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
